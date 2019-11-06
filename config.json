@@ -1,0 +1,23 @@
+{
+    "auth" : {
+        "CONSUMER_KEY":"my_key",
+        "CONSUMER_SECRET":"my_secret",
+        "ACCESS_TOKEN":"my_access",
+        "ACCESS_TOKEN_SECRET":"my_access_secret"
+    },
+    "post_rate_hrs" : "1",
+    "realtime" : true,
+    "accounts" : [
+        {
+            "user" : "readDonaldTrump",
+            "sample_mode" : "popular",
+            "weight" : 2.0
+        },
+        {
+            "user" : "HillaryClinton",
+            "sample_mode" : "popular",
+            "weight" : 20.0
+        }
+    ],
+    "selection_algorithm" : "weighted_heap"
+}
