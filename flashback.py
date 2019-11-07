@@ -6,9 +6,7 @@ from utils import *
 CONFIG_FILE = "config.json"
 
 def main():
-    config = load_config(CONFIG_FILE)
-
-    client = FlashbackClient(config)
+    client = FlashbackClient(config=CONFIG_FILE)
 
     client.main()
 

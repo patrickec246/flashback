@@ -2,10 +2,13 @@ import json
 import tweepy
 import errno
 import random
+import datetime
 
 import asyncio
 
 from os import path
+
+SECONDS_PER_HOUR = 3600
 
 def load_config(filepath):
     if not path.exists(filepath):
@@ -17,11 +20,14 @@ def load_config(filepath):
 
 class FlashbackClient(object):
     def __init__(self, config):
-        self.config = config
         self.users = None
+        self.config = load_config(config)
+
+        self.start_date = datetime.datetime.strptime(self.config['start_date'], '%m/%d/%Y')
+        self.end_date = datetime.datetime.strptime(self.config['end_date'], '%m/%d/%Y')
 
         err = self.authenticate()
-        if err == 1000: #TODO we're almost there, fix once we get API
+        if err:
             raise Exception('Unable to authenticate twitter account, err {}'.format(err))
 
     def authenticate(self):
@@ -60,7 +66,7 @@ class FlashbackClient(object):
             q='(from%3{})'.format(user['user'])
             )
 
-        return tweets[0] #TODO fix
+        return random.choice(tweets)
 
     def sample_user(self):
         if self.users is None:
@@ -72,12 +78,19 @@ class FlashbackClient(object):
             return random.choices(
                     population=self.users,
                     weights=[user['weight'] for user in self.users],
-                    k=1)
+                    k=1
+                    )
         else:
             return None
 
     def main(self):
         while True:
-            #self.tweet(self.sample_tweet())
-            asyncio.run(asyncio.sleep(int(self.config['post_rate_hrs']) * 60 * 60))
-            print('ye')
+            now = datetime.datetime.now()
+
+            if now > self.end_date:
+                break
+
+            if now >= self.start_date:
+                self.tweet(self.sample_tweet())
+
+            asyncio.run(asyncio.sleep(int(self.config['post_rate_hrs']) * SECONDS_PER_HOUR))
